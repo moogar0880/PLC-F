@@ -37,8 +37,7 @@ fun rest s =
    val printPermutations = fn : string permutationSeq -> unit 5pts *)
 fun printPermutations s = 
   let
-    fun toList
-      fun printHelper (s) = (next s)^" "^printHelper(rest s)
+    fun printHelper (s) = (next s)^" "^printHelper(rest s)
   in
     print(printHelper(s))
   end
