@@ -37,9 +37,10 @@ fun rest s =
    val printPermutations = fn : string permutationSeq -> unit 5pts *)
 fun printPermutations s = 
   let
-      fun printHelper s = print(next s)^printHelper(rest s)
+    fun toList
+      fun printHelper (s) = (next s)^" "^printHelper(rest s)
   in
-    printHelper(s)
+    print(printHelper(s))
   end
 
 (* ================================EXTRA CREDIT================================
@@ -49,7 +50,13 @@ fun printPermutations s =
    function must be a tuple of the found value (or NONE) and the remainder of
    the sequence after the found value 
    val find = (’a -> bool) -> ’a permutationSeq -> ’a * ’a permutationSeq 10pts *)
-fun find f s = raise NotImplemented
+fun find f s = 
+  let
+    fun finder (Cons(NONE, ros)) = finder (ros())
+      | finder (Cons(SOME x, ros)) = if f(x) then SOME x else finder(ros())
+  in
+    finder(s)
+  end
 (* ========================================================================== *)
 
 (* Estimates the integral of function f over the range from x1 to x2 using the
