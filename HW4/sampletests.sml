@@ -3,32 +3,32 @@ use "main.sml";
 use "tester.sml";
 
 (* permutation tests *)
-val singleSeq = ref (permutation [1])
-val smallSeq = ref (permutation [1])
-val medSeq = ref (permutation [1])
-val largeSeq = ref (permutation ["1"])
+val singleSeq = ref (permutation [1]);
+val smallSeq = ref (permutation [1]);
+val medSeq = ref (permutation [1]);
+val largeSeq = ref (permutation ["1"]);
 
-val r1 = [[1,2,3],[2,1,3],[2,3,1],[1,3,2],[3,1,2],[3,2,1]]
-val s1 = ["2", "3", "4", "5", "6", "7", "8", "9", "0", "1"]
-val s2 = ["7", "6", "3", "2", "0", "4", "1", "5", "9", "8"]
-val s3 = ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
+val r1 = [[1,2,3],[2,1,3],[2,3,1],[1,3,2],[3,1,2],[3,2,1]];
+val s1 = ["2", "3", "4", "5", "6", "7", "8", "9", "0", "1"];
+val s2 = ["7", "6", "3", "2", "0", "4", "1", "5", "9", "8"];
+val s3 = ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"];
 
 fun contains l (SOME i) = List.exists (fn x => x = i) l
-  | contains _ NONE = false
+  | contains _ NONE = false;
 
 exception optionException
 
 fun unOption (SOME x) = x
-  | unOption NONE = raise optionException
+  | unOption NONE = raise optionException;
 
 fun empty (Cons(NONE, _)) = true
   | empty _ = false
 
-fun test1 () = (smallSeq := permutation [1,3,2]; not (empty (!smallSeq)))
+fun test1 () = (smallSeq := permutation [1,3,2]; not (empty (!smallSeq)));
 fun test2 () = (medSeq := permutation (List.tabulate (5, (fn x => x))); not (empty (!medSeq)))
 fun test3 () = (largeSeq := permutation (List.map (Int.toString) (List.tabulate (10, (fn x => x)))); not (empty (!largeSeq)))
-fun test4 () = let val s1 = permutation [5,6]
-                   val s2 = permutation ["hat","cat"]
+fun test4 () = let val s1 = permutation [5,6];
+                   val s2 = permutation ["hat","cat"];
                in
                    contains [[5,6],[6,5]] (next (rest s1)) andalso
                    contains [["cat","hat"],["hat","cat"]] (next (rest s2))

@@ -7,7 +7,40 @@ datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq)
    val permutation = fn : 'a list -> 'a permutationSeq 30pts *)
 fun permutation l =
   let
-    fun perm lst = Cons(SOME lst, fn() => perm lst)
+    (* Get the next permutation of a list *)
+    fun getNextPerm lst = 
+      let
+        (* Search by index *)
+        fun find ([],_) = []
+          | find (((x,y)::rol),v) = if x = v then ((x,y)::rol) else find(rol,v)
+        (* Find largest value that is less than the value next to it  *)
+        fun getPos (((x,v)::[]),i)  = x
+          | getPos (((x,v)::rol),i) = if x < getPos(rol,x) then x else getPos(rol,x)
+        (* Simple sorting method for lists/tuples *)
+        fun sort []  = []
+          | sort [v] = [v]
+          | sort ((v,w)::(x,z)::rol) = if v >= x then sort ((x,z)::(sort ((v,w)::rol))) else (v,w)::(sort ((x,z)::rol))
+        (* Return the value with the smallest value that is bigger than v *)
+        fun nextLargest ((x::[]),v)  = x
+          | nextLargest ((x::rol),v) = hd (sort(rol))
+        (* Swap two elements of a list *)
+        fun swap ([],_,_) = []
+          | swap ((x::rol),v1,v2) = if x = v1 then v2::swap(rol,v1,v2) else if x = v2 then v1::swap(rol,v1,v2) else x::swap(rol,v1,v2)
+        (* Get the index of a tuple index in a list *)
+        fun listIndex (((x,_)::rol),i,v) = if x = v then i else listIndex(rol,i+1,v)
+        (* Given an index, return the tuple at that index *)
+        fun getTuple(((x,y)::rol),i) = if x = i then (x,y) else getTuple(rol,i)
+        (* Get a list of all indexes, in order of appearance in list *)
+        fun indexList [] = []
+          | indexList ((x,_)::rol) = x::indexList(rol)
+        (* Determine if there are no more permutations *)
+        fun done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false
+        val pos     = getPos(lst,0-1);
+        val newList = swap(lst,getTuple(lst,pos),nextLargest(lst,pos));
+      in
+        List.take(newList,listIndex(newList,0,pos))@sort(find(newList,pos))
+      end
+    fun perm lst = Cons(SOME lst, fn() => perm(getNextPerm lst))
   in
       perm(ListPair.zip(List.tabulate(List.length(l), fn x => x),l))
   end
@@ -16,8 +49,10 @@ fun permutation l =
    val next = fn : ’a permutationSeq -> ’a option 10pts *)
 fun next s = 
   let
+    fun getValueList [] = []
+      | getValueList ((_,y)::rol)   = y::getValueList(rol)
     fun getNext (Cons(NONE, ros))   = getNext(ros())
-      | getNext (Cons(SOME x, ros)) = SOME x
+      | getNext (Cons(SOME x, ros)) = SOME (getValueList(x))
   in
       getNext(s)
   end
@@ -36,9 +71,15 @@ fun rest s =
    val printPermutations = fn : string permutationSeq -> unit 5pts 
 fun printPermutations s = 
   let
-    fun printHelper (s) = (next s)^", "^printHelper(rest s)
+    fun done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false
+    fun valueList [] = []
+      | valueList ((_,y)::rol) = y::valueList(rol)
+    fun listPrint ((_,y : string)::[])  = y
+      | listPrint ((_,y : string)::rol) = y^", "^listPrint(rol)
+    fun printHelper (Cons(NONE, ros)) = printHelper(ros())
+      | printHelper (Cons(SOME x,ros)) = if done(valueList(x)) then "["^listPrint(x)^"]" else "["^listPrint(x)^"], "^printHelper(rest s)
   in
-    print(printHelper(s))
+    print(printHelper s)
   end*)
 
 (* ================================EXTRA CREDIT================================
@@ -51,7 +92,7 @@ fun printPermutations s =
 fun find f s = 
   let
     fun finder (Cons(NONE, ros)) = finder (ros())
-      | finder (Cons(SOME x, ros)) = if f(x) then (SOME x, ros()) else finder(ros())
+      | finder (Cons(SOME (a,b), ros)) = if f(b) then (SOME b, ros()) else finder(ros())
   in
     finder(s)
   end
