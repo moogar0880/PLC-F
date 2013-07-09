@@ -7,10 +7,12 @@ datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq)
    val permutation = fn : 'a list -> 'a permutationSeq 30pts *)
 fun permutation [] = Cons(NONE, fn() => permutation [])
   | permutation l =
-  let 
-    fun perm () = Cons(SOME l, fn() => perm())
+  let
+    fun convert (_,[]) = []
+      | convert (i,(x::rol)) = (i, x)::convert(i+1, rol)
+    fun perm lst = Cons(SOME lst, fn() => perm lst)
   in
-      perm()
+      perm (convert(0,l))
   end
 
 (* Gets the next permutation in the sequence 
