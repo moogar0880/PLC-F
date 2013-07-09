@@ -5,12 +5,12 @@ datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq)
 (* Returns one of our permutationSeq structures that can lazily generate all
    permutations of the list given to it 
    val permutation = fn : 'a list -> 'a permutationSeq 30pts *)
-fun permutation l =
+fun permutation [] = Cons(NONE, fn() => permutation [])
+  | permutation l =
   let 
-    fun perm (x::[]) = Cons(SOME x, fn() => perm([]))
-      | perm (x::rol) = Cons(SOME x, fn() => perm(rol))
+    fun perm () = Cons(SOME l, fn() => perm())
   in
-      perm l
+      perm()
   end
 
 (* Gets the next permutation in the sequence 
@@ -34,13 +34,13 @@ fun rest s =
   end
 
 (* One by one print all the permutations represented by a string permutationSeq 
-   val printPermutations = fn : string permutationSeq -> unit 5pts *)
+   val printPermutations = fn : string permutationSeq -> unit 5pts 
 fun printPermutations s = 
   let
-    fun printHelper (s) = (next s)^" "^printHelper(rest s)
+    fun printHelper (s) = (next s)^", "^printHelper(rest s)
   in
     print(printHelper(s))
-  end
+  end*)
 
 (* ================================EXTRA CREDIT================================
    Takes a ’a permutationSeq and a function fn : ’a -> bool that will give the
@@ -52,7 +52,7 @@ fun printPermutations s =
 fun find f s = 
   let
     fun finder (Cons(NONE, ros)) = finder (ros())
-      | finder (Cons(SOME x, ros)) = if f(x) then SOME x else finder(ros())
+      | finder (Cons(SOME x, ros)) = if f(x) then (SOME x, ros()) else finder(ros())
   in
     finder(s)
   end
