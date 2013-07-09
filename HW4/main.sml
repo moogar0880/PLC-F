@@ -5,14 +5,11 @@ datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq)
 (* Returns one of our permutationSeq structures that can lazily generate all
    permutations of the list given to it 
    val permutation = fn : 'a list -> 'a permutationSeq 30pts *)
-fun permutation [] = Cons(NONE, fn() => permutation [])
-  | permutation l =
+fun permutation l =
   let
-    fun convert (_,[]) = []
-      | convert (i,(x::rol)) = (i, x)::convert(i+1, rol)
     fun perm lst = Cons(SOME lst, fn() => perm lst)
   in
-      perm (convert(0,l))
+      perm(ListPair.zip(List.tabulate(List.length(l), fn x => x),l))
   end
 
 (* Gets the next permutation in the sequence 
