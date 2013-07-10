@@ -1,7 +1,9 @@
 exception NotImplemented
 exception Found of int
 
-datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq)
+datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq);
+
+fun nullSeq () = Cons(NONE, fn() => nullSeq() )
 
 (* Returns one of our permutationSeq structures that can lazily generate all
    permutations of the list given to it
@@ -24,27 +26,33 @@ fun permutation l =
           | sort ((v,w)::(x,z)::rol) = if v >= x then sort ((x,z)::(sort ((v,w)::rol))) else (v,w)::(sort ((x,z)::rol))
         (* Return the value with the smallest value that is bigger than v *)
         fun nextLargest ((x::[]),v)  = x
-          | nextLargest ((x::rol),v) = hd (tl((sort(rol))));
+          | nextLargest ((x::rol),v) = if #1 (hd ((sort(rol)))) = v then hd (tl((sort(rol)))) else hd ((sort(rol)));
         (* Swap two elements of a list *)
         fun swap ([],_,_) = []
           | swap ((x::rol),v1,v2) = if x = v1 then v2::swap(rol,v1,v2) else if x = v2 then v1::swap(rol,v1,v2) else x::swap(rol,v1,v2);
         (* Get the index of a tuple index in a list *)
         fun listIndex (((x,_)::rol),i,v) = if x = v then i else listIndex(rol,i+1,v);
         (* Given an index, return the tuple at that index *)
-        fun getTuple(((x,y)::rol),i) = if x = i then (x,y) else getTuple(rol,i);
+        fun getTuple ([],_) = (~1,~1)
+          | getTuple (((x,y)::rol),i) = if x = i then (x,y) else getTuple(rol,i);
         (* Get a list of all indexes, in order of appearance in list *)
         fun indexList [] = []
           | indexList ((x,_)::rol) = x::indexList(rol);
         (* Determine if there are no more permutations *)
-        fun done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false
-        val pos     = getPos(lst,~1);
-        val newList = swap(lst,getTuple(lst,pos),nextLargest(lst,pos));
+        fun done []  = true
+          | done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false;
+        val pos      = getPos(lst,~1);
+        val nLargest = nextLargest(lst,pos);
+        val newList  = swap(lst,getTuple(lst,pos),nLargest);
+        val li       = listIndex(newList,0,(#1 nLargest))
+        val nextPerm = List.take(newList,li)@sort(find(newList,li));
       in
-        List.take(newList,listIndex(newList,0,pos))@sort(find(newList,pos))
+        (*if done(indexList(lst)) then Cons(NONE, fn() => nullSeq() ) else Cons(SOME nextPerm, fn() => getNextPerm nextPerm)*)
+        Cons(SOME nextPerm, fn() => getNextPerm nextPerm)
       end
-    fun perm lst = Cons(SOME lst, fn() => perm(getNextPerm lst))
+    fun perm lst = Cons(SOME lst, fn() => getNextPerm lst)
   in
-      perm(ListPair.zip(List.tabulate(List.length(l), fn x => x),l))
+    perm(ListPair.zip(List.tabulate(List.length(l), fn x => x),l))
   end
 
 (* Gets the next permutation in the sequence
@@ -53,7 +61,7 @@ fun next s =
   let
     fun getValueList [] = []
       | getValueList ((_,y)::rol)   = y::getValueList(rol)
-    fun getNext (Cons(NONE, ros))   = getNext(ros())
+    fun getNext (Cons(NONE, ros))   = NONE
       | getNext (Cons(SOME x, ros)) = SOME (getValueList(x))
   in
       getNext(s)
