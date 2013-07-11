@@ -16,6 +16,9 @@ fun permutation l =
         (* Search by index *)
         fun find ([],_) = []
           | find (((x,y)::rol),v) = if x = v then ((x,y)::rol) else find(rol,v);
+        (* Search by list index, not entries index *)
+        fun findByLI ([],_,_) = []
+          | findByLI ((x::rol),v,i) = if i = v then (x::rol) else findByLI(rol,v,i+1);
         (* Find largest value that is less than the value next to it  *)
         fun getPos (((x1,v1)::(x2,v2)::[]),i)  = if x1 < x2 andalso x1 > i then x1 else i
           | getPos (((x1,v1)::(x2,v2)::rol),i) = if x1 < x2 andalso x1 > i then getPos((x2,v2)::rol, x1) else getPos((x2,v2)::rol,i);
@@ -25,8 +28,15 @@ fun permutation l =
           | sort [v] = [v]
           | sort ((v,w)::(x,z)::rol) = if v >= x then sort ((x,z)::(sort ((v,w)::rol))) else (v,w)::(sort ((x,z)::rol))
         (* Return the value with the smallest value that is bigger than v *)
-        fun nextLargest ((x::[]),v)  = x
-          | nextLargest ((x::rol),v) = if #1 (hd ((sort(rol)))) = v then hd (tl((sort(rol)))) else hd ((sort(rol)));
+        fun nextLargest (((x,y)::[]),v)  = (x,y)
+          | nextLargest (((x,y)::rol),v) = 
+            let
+                val sorted = sort(rol);
+                val value  = #1 (hd sorted);
+            in
+                if value > x andalso value <> v then hd sorted else nextLargest(sorted,v)
+            end
+          (*if #1 (hd ((sort(rol)))) = v then hd (tl((sort(rol)))) else hd ((sort(rol)));*)
         (* Swap two elements of a list *)
         fun swap ([],_,_) = []
           | swap ((x::rol),v1,v2) = if x = v1 then v2::swap(rol,v1,v2) else if x = v2 then v1::swap(rol,v1,v2) else x::swap(rol,v1,v2);
@@ -44,11 +54,12 @@ fun permutation l =
         val pos      = getPos(lst,~1);
         val nLargest = nextLargest(lst,pos);
         val newList  = swap(lst,getTuple(lst,pos),nLargest);
-        val li       = listIndex(newList,0,(#1 nLargest))
-        val nextPerm = List.take(newList,li)@sort(find(newList,li));
+        val li       = listIndex(newList,0,(#1 nLargest));
+        val pivot    = tl(findByLI(newList,li,0));
+        val nextPerm = List.take(newList,li+1)@sort(pivot);
       in
-        (*if done(indexList(lst)) then Cons(NONE, fn() => nullSeq() ) else Cons(SOME nextPerm, fn() => getNextPerm nextPerm)*)
-        Cons(SOME nextPerm, fn() => getNextPerm nextPerm)
+        if done(indexList(lst)) then Cons(NONE, fn() => nullSeq() ) else Cons(SOME nextPerm, fn() => getNextPerm nextPerm)
+        (*Cons(SOME nextPerm, fn() => getNextPerm nextPerm)*)
       end
     fun perm lst = Cons(SOME lst, fn() => getNextPerm lst)
   in
