@@ -142,9 +142,10 @@ fun find f s =
    val integral = fn : (fn : real -> real) -> real -> real -> real 20pts *)
 fun integral f x1 x2 = if Real.<(x2,x1) then 0.0 else
   let
-    fun integrate (cur,sum) = if cur >= x2 then sum else integrate((cur + 0.1), (sum + f(cur) * 0.1))
+    val stopAt = Real.round(Real.*(10.0,Real.-(x2,x1)));
+    fun integrate (cur,sum,count) = if count >= stopAt then sum else integrate((cur + 0.1), (sum + f(cur) * 0.1),Int.+(count,1))
   in
-    integrate(x1,0.0)
+    integrate(x1,0.0,0)
   end
 
 (* returns a function which will behave the same as integral but will use stored
