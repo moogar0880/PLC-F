@@ -24,6 +24,7 @@ fun unOption (SOME x) = x
 fun empty (Cons(NONE, _)) = true
   | empty _ = false
 
+(*===============================================permutationSeq Tests===============================================*)
 fun test1 () = (smallSeq := permutation [1,3,2]; not (empty (!smallSeq)))
 fun test2 () = (medSeq := permutation (List.tabulate (5, (fn x => x))); not (empty (!medSeq)))
 fun test3 () = (largeSeq := permutation (List.map (Int.toString) (List.tabulate (10, (fn x => x)))); not (empty (!largeSeq)))
@@ -98,9 +99,20 @@ fun test10 () =
 (* test 11 *)                        
 fun test11 () = (printPermutations (permutation ["1","2","3"]); true)
 
-(* integral tests *)
+(*==================================================Integral Tests==================================================*)
 fun eq (x, y) inc = (Real.abs (x-y)) < (inc / 2.0)
 
+fun constant x = 5.0
+
+fun yEqualsX x = x
+
+fun parabola x = Math.pow (x, 2.0)
+
+fun test12 () = eq ((integral parabola 0.0 10.0), 328.35) 3.0
+fun test13 () = eq ((integral yEqualsX 5.0 12.0), 59.15) 0.1
+fun test14 () = eq ((integral constant 1.7 4.5), 14.0) 0.01
+
+(*================================================Integralmem Tests================================================*)
 fun time f x1 x2 =
   let 
     val rt = Timer.startRealTimer()
@@ -110,11 +122,11 @@ fun time f x1 x2 =
     t
   end
 
-fun constant x = 5.0
-
-fun yEqualsX x = x
-
-fun parabola x = Math.pow (x, 2.0)
+val coeff = [1.0, ~4.0, 12.7, 9.3, ~18.0, 0.3, 1.0]
+fun makeCoeff 0 = []
+  | makeCoeff n = coeff@(makeCoeff (n-1))
+val coeff1 = makeCoeff 3
+val coeff2 = makeCoeff 10
 
 fun polynomial l x = 
   let 
@@ -123,16 +135,6 @@ fun polynomial l x =
   in
     poly l (Real.fromInt (length l))
   end
-
-val coeff = [1.0, ~4.0, 12.7, 9.3, ~18.0, 0.3, 1.0]
-fun makeCoeff 0 = []
-  | makeCoeff n = coeff@(makeCoeff (n-1))
-val coeff1 = makeCoeff 3
-val coeff2 = makeCoeff 10
-
-fun test12 () = eq ((integral parabola 0.0 10.0), 328.35) 3.0
-fun test13 () = eq ((integral yEqualsX 5.0 12.0), 59.15) 0.1
-fun test14 () = eq ((integral constant 1.7 4.5), 14.0) 0.01
 
 (* test 15 *)
 fun test15 () = 
@@ -163,6 +165,7 @@ fun test17 () =
     ((f 0.0 300.0) > (f 0.0 300.0))
   end
 
+(*====================================================All Tests====================================================*)
 val allTests =
     [(1, "test1 create a small sequence [1...3]", test1),
      (1, "test2 create a medium sized sequence [0...5]", test2),
@@ -174,11 +177,12 @@ val allTests =
      (1, "test8 small sequence contains all permutations", test8),
      (1, "test9 large sequence contains a few particular permutations", test9),
      (1, "test10 no repeats in permutationSeq", test10),
-     (1, "test11 printPermutations (will double check manually)", test11),
+     (1, "test11 printPermutations (double check manually)", test11),
 
      (1, "test12 test1integral of y = x^2 from 0.0 to 10.0", test12),
      (1, "test13 test1integral of y = x from 0.0 to 5.0", test13),
      (1, "test14 test1integral of constant from 1.7 to 4.5", test14),
+
      (1, "test15 test1integralMem faster on second run with 21st degree polynomial from 0.0 to 100.0", test15),
      (1, "test16 test1integralMem on two different functions won't cause interference", test16),
      (1, "test17 test1integralMem faster on second run with 70th degree polynomial from 0.0 to 300.0", test17)]

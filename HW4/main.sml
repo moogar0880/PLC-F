@@ -1,24 +1,6 @@
 exception NotImplemented
 exception Error of string
-(* Variables for testing via terminal
-   val lst = [(0,0),(1,1),(2,2)];
-   val lst = [(0,0),(2,2),(1,1)];
-   val lst = [(1,1),(0,0),(2,2)];
-   val lst = [(1,1),(2,2),(0,0)];
-   val lst = [(2,2),(0,0),(1,1)];
-   val lst = [(2,2),(1,1),(0,0)];
-   val p = permutation[0,1,2];
-   val p = permutation ["0","1","2"];
-   printPermutations p;
-   next p;
-   next (rest p);
-   next (rest (rest p));
-   next (rest (rest (rest p)));
-   next (rest (rest (rest (rest p))));
-   next (rest (rest (rest (rest (rest p)))));
-   next (rest (rest (rest (rest (rest (rest p))))));
-   next (rest (rest (rest (rest (rest (rest (rest p)))))));
-*)
+
 datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq)
 
 fun nullSeq lst = Cons(NONE, fn() => nullSeq lst)
@@ -142,19 +124,97 @@ fun find f s =
    val integral = fn : (fn : real -> real) -> real -> real -> real 20pts *)
 fun integral f x1 x2 = if Real.<(x2,x1) then 0.0 else
   let
-    val stopAt = Real.round(Real.*(10.0,Real.-(x2,x1)));
+    val stopAt = Real.round(Real.*(10.0,Real.-(x2,x1)))
     fun integrate (cur,sum,count) = if count >= stopAt then sum else integrate((cur + 0.1), (sum + f(cur) * 0.1),Int.+(count,1))
   in
     integrate(x1,0.0,0)
   end
 
-(* returns a function which will behave the same as integral but will use stored
+(* Returns a function which will behave the same as integral but will use stored
    information on previously calculated integral values. For many cases, this should
    perform more quickly than subsequent calls to integral on the same value of f.
    It must at least make use of information for the individual “rectangles”, but can
    also make use of information about the ranges and increase performance in some cases
    val integralMem = (fn : real -> real) -> fn : real -> real -> real 25pts *)
-fun integralMem f = raise NotImplemented
+fun integralMem f = 
+  let
+    (* Hashtable Implementation *)
+    val size = 100;
+
+    (* Super simple hash function *)
+    fun hash v = Real.round(Real.rem(v,Real.fromInt(size)));
+
+    (* Adding Functions *)
+    fun addToBucket (v,[])       = [v]
+      | addToBucket (v,(x::rol)) = if Real.==(v,x) then x::rol else x::addToBucket(v,rol);
+
+    fun insert(x,A) =
+      let
+        val bucket = hash(x);
+        val L = sub(A,bucket);
+      in
+        Array.update(A,bucket,addToBucket(x,L))
+      end;
+
+    (* Removal Functions *)
+    fun removeEntry(v,[])     = []
+      | removeEntry(v,x::rol) = if Real.==(v,x) then rol else x::removeEntry(v,rol);
+
+    fun delete(x,A) =
+      let
+        val bucket = hash(x);
+        val L = sub(A,bucket)
+      in
+        Array.update(A,bucket,removeEntry(x,L))
+      end;
+
+    (* Lookup Functions *)
+    fun search(v,[])     = false
+      | search(v,x::rol) = if Real.==(v,x) then true else search(v,rol);
+
+    fun lookup(x,A) = search(x,sub(A,hash(x)));
+
+    (* Get Functions - Must make call to lookup first, get will not check to ensure value exists *)
+    fun find(v,[])     = v (*Should never get here*)
+      | find(v,x::rol) = if Real.==(v,x) then x else find(v,rol)
+
+    fun get(v,A) = find(v,sub(A,hash(v)))
+
+    (* Hashtable Variable *)
+    val table = Array.array(size, [] : real list);
+  in
+    (fn x1 x2 => let
+        val stopAt = Real.round(Real.*(10.0,Real.-(x2,x1)))
+        fun integrate (cur,sum,count) = 
+          if count >= stopAt then sum 
+          else if lookup(cur,table) then integrate((cur + 0.1), (sum + get(cur,table) * 0.1),Int.+(count,1)) 
+          else integrate((cur + 0.1), (sum + f(cur) * 0.1),Int.+(count,1))
+    in
+        integrate(x1,0.0,0)
+    end )
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
