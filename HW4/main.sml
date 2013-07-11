@@ -1,9 +1,25 @@
 exception NotImplemented
-exception Found of int
-
+exception Error of string
+(* Variables for testing via terminal
+   val lst = [(0,0),(1,1),(2,2)];
+   val lst = [(0,0),(2,2),(1,1)];
+   val lst = [(1,1),(0,0),(2,2)];
+   val lst = [(1,1),(2,2),(0,0)];
+   val lst = [(2,2),(0,0),(1,1)];
+   val lst = [(2,2),(1,1),(0,0)];
+   val p = permutation[0,1,2];
+   next p;
+   next (rest p);
+   next (rest (rest p));
+   next (rest (rest (rest p)));
+   next (rest (rest (rest (rest p))));
+   next (rest (rest (rest (rest (rest p)))));
+   next (rest (rest (rest (rest (rest (rest p))))));
+   next (rest (rest (rest (rest (rest (rest (rest p)))))));
+*)
 datatype 'a permutationSeq = Cons of 'a option * (unit -> 'a permutationSeq);
 
-fun nullSeq () = Cons(NONE, fn() => nullSeq() )
+fun nullSeq lst = Cons(NONE, fn() => nullSeq lst)
 
 (* Returns one of our permutationSeq structures that can lazily generate all
    permutations of the list given to it
@@ -15,14 +31,13 @@ fun permutation l =
       let
         (* Search by index *)
         fun find ([],_) = []
-          | find (((x,y)::rol),v) = if x = v then ((x,y)::rol) else find(rol,v);
+          | find (((x,y)::rol),v) = if x = v then ((x,y)::rol) else find(rol,v)
         (* Search by list index, not entries index *)
         fun findByLI ([],_,_) = []
-          | findByLI ((x::rol),v,i) = if i = v then (x::rol) else findByLI(rol,v,i+1);
+          | findByLI ((x::rol),v,i) = if i = v then (x::rol) else findByLI(rol,v,i+1)
         (* Find largest value that is less than the value next to it  *)
         fun getPos (((x1,v1)::(x2,v2)::[]),i)  = if x1 < x2 andalso x1 > i then x1 else i
-          | getPos (((x1,v1)::(x2,v2)::rol),i) = if x1 < x2 andalso x1 > i then getPos((x2,v2)::rol, x1) else getPos((x2,v2)::rol,i);
-        (*val lst = [(0,0),(1,1),(2,2)];*)
+          | getPos (((x1,v1)::(x2,v2)::rol),i) = if x1 < x2 andalso x1 > i then getPos((x2,v2)::rol, x1) else getPos((x2,v2)::rol,i)
         (* Simple sorting method for lists/tuples *)
         fun sort []  = []
           | sort [v] = [v]
@@ -31,35 +46,33 @@ fun permutation l =
         fun nextLargest (((x,y)::[]),v)  = (x,y)
           | nextLargest (((x,y)::rol),v) = 
             let
-                val sorted = sort(rol);
-                val value  = #1 (hd sorted);
+                val sorted = sort(rol)
+                val value  = #1 (hd sorted)
             in
                 if value > x andalso value <> v then hd sorted else nextLargest(sorted,v)
             end
-          (*if #1 (hd ((sort(rol)))) = v then hd (tl((sort(rol)))) else hd ((sort(rol)));*)
         (* Swap two elements of a list *)
         fun swap ([],_,_) = []
-          | swap ((x::rol),v1,v2) = if x = v1 then v2::swap(rol,v1,v2) else if x = v2 then v1::swap(rol,v1,v2) else x::swap(rol,v1,v2);
+          | swap ((x::rol),v1,v2) = if x = v1 then v2::swap(rol,v1,v2) else if x = v2 then v1::swap(rol,v1,v2) else x::swap(rol,v1,v2)
         (* Get the index of a tuple index in a list *)
-        fun listIndex (((x,_)::rol),i,v) = if x = v then i else listIndex(rol,i+1,v);
+        fun listIndex (((x,_)::rol),i,v) = if x = v then i else listIndex(rol,i+1,v)
         (* Given an index, return the tuple at that index *)
         fun getTuple ([],_) = (~1,~1)
-          | getTuple (((x,y)::rol),i) = if x = i then (x,y) else getTuple(rol,i);
+          | getTuple (((x,y)::rol),i) = if x = i then (x,y) else getTuple(rol,i)
         (* Get a list of all indexes, in order of appearance in list *)
         fun indexList [] = []
-          | indexList ((x,_)::rol) = x::indexList(rol);
+          | indexList ((x,_)::rol) = x::indexList(rol)
         (* Determine if there are no more permutations *)
         fun done []  = true
-          | done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false;
-        val pos      = getPos(lst,~1);
-        val nLargest = nextLargest(lst,pos);
-        val newList  = swap(lst,getTuple(lst,pos),nLargest);
-        val li       = listIndex(newList,0,(#1 nLargest));
-        val pivot    = tl(findByLI(newList,li,0));
-        val nextPerm = List.take(newList,li+1)@sort(pivot);
+          | done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false
+        val pos      = getPos(lst,~1)
+        val nLargest = nextLargest(lst,pos)
+        val newList  = swap(lst,getTuple(lst,pos),nLargest)
+        val li       = listIndex(newList,0,(#1 nLargest))
+        val pivot    = tl(findByLI(newList,li,0))
+        val nextPerm = List.take(newList,li+1)@sort(pivot)
       in
-        if done(indexList(lst)) then Cons(NONE, fn() => nullSeq() ) else Cons(SOME nextPerm, fn() => getNextPerm nextPerm)
-        (*Cons(SOME nextPerm, fn() => getNextPerm nextPerm)*)
+        if done(indexList(nextPerm)) then Cons(SOME nextPerm, fn() => nullSeq lst) else Cons(SOME nextPerm, fn() => getNextPerm nextPerm)
       end
     fun perm lst = Cons(SOME lst, fn() => getNextPerm lst)
   in
@@ -89,19 +102,16 @@ fun rest s =
   end
 
 (* One by one print all the permutations represented by a string permutationSeq
-   val printPermutations = fn : string permutationSeq -> unit 5pts
+   val printPermutations = fn : string permutationSeq -> unit 5pts *)
 fun printPermutations s =
   let
-    fun done lst = if List.rev(lst) = List.tabulate(List.length(lst), fn x => x) then true else false
-    fun valueList [] = []
-      | valueList ((_,y)::rol) = y::valueList(rol)
     fun listPrint ((_,y : string)::[])  = y
       | listPrint ((_,y : string)::rol) = y^", "^listPrint(rol)
-    fun printHelper (Cons(NONE, ros)) = printHelper(ros())
-      | printHelper (Cons(SOME x,ros)) = if done(valueList(x)) then "["^listPrint(x)^"]" else "["^listPrint(x)^"], "^printHelper(rest s)
+    fun printHelper (Cons(NONE, ros))   = ""
+      | printHelper (Cons(SOME x,ros))  =  "["^listPrint(x)^"], "^printHelper(rest s)
   in
     print(printHelper s)
-  end*)
+  end
 
 (* ================================EXTRA CREDIT================================
    Takes a ’a permutationSeq and a function fn : ’a -> bool that will give the

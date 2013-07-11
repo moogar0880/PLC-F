@@ -4,9 +4,9 @@ use "tester.sml";
 
 (* permutation tests *)
 val singleSeq = ref (permutation [1]);
-val smallSeq = ref (permutation [1]);
-val medSeq = ref (permutation [1]);
-val largeSeq = ref (permutation ["1"]);
+val smallSeq  = ref (permutation [1]);
+val medSeq    = ref (permutation [1]);
+val largeSeq  = ref (permutation ["1"]);
 
 val r1 = [[1,2,3],[2,1,3],[2,3,1],[1,3,2],[3,1,2],[3,2,1]];
 val s1 = ["2", "3", "4", "5", "6", "7", "8", "9", "0", "1"];
