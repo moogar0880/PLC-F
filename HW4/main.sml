@@ -139,10 +139,10 @@ fun integral f x1 x2 = if Real.<(x2,x1) then 0.0 else
 fun integralMem f = 
   let
     (* Hashtable Implementation *)
-    val size = 100
+    val size = 1000
 
     (* Super simple hash function *)
-    fun hash v = let val tmp = "tmp" in print(Int.toString(Real.round(Real.rem(v,Real.fromInt(size))))); Real.round(Real.rem(v,Real.fromInt(size))) end
+    fun hash v = Real.round(Real.rem(v,Real.fromInt(size)))
 
     (* Adding Functions *)
     fun addToBucket ((key,value),[])       = [(key,value)]
