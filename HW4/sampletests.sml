@@ -120,13 +120,13 @@ fun time f x1 x2 =
     val t = Time.toReal(Timer.checkRealTimer rt)
   in
     t
-  end
+  end;
 
-val coeff = [1.0, ~4.0, 12.7, 9.3, ~18.0, 0.3, 1.0]
+val coeff = [1.0, ~4.0, 12.7, 9.3, ~18.0, 0.3, 1.0];
 fun makeCoeff 0 = []
-  | makeCoeff n = coeff@(makeCoeff (n-1))
-val coeff1 = makeCoeff 3
-val coeff2 = makeCoeff 10
+  | makeCoeff n = coeff@(makeCoeff (n-1));
+val coeff1 = makeCoeff 3;
+val coeff2 = makeCoeff 10;
 
 fun polynomial l x = 
   let 
@@ -139,7 +139,7 @@ fun polynomial l x =
 (* test 15 *)
 fun test15 () = 
   let 
-    val f = time (integralMem (polynomial coeff1))
+    val f = time (integralMem (polynomial coeff1));
   in
     ((f 0.0 100.0) > (f 0.0 100.0))
   end
@@ -147,7 +147,7 @@ fun test15 () =
 (* test 16 *)
 fun test16 () = 
   let 
-    val f1 = integralMem parabola
+    val f1 = integralMem parabola;
     val f2 = integralMem constant
     val f1r1 = f1 0.0 10.0
     val f2r1 = f2 0.0 1.0

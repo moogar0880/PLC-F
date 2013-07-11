@@ -139,59 +139,50 @@ fun integral f x1 x2 = if Real.<(x2,x1) then 0.0 else
 fun integralMem f = 
   let
     (* Hashtable Implementation *)
-    val size = 100;
+    val size = 100
 
     (* Super simple hash function *)
-    fun hash v = Real.round(Real.rem(v,Real.fromInt(size)));
+    fun hash v = let val tmp = "tmp" in print(Int.toString(Real.round(Real.rem(v,Real.fromInt(size))))); Real.round(Real.rem(v,Real.fromInt(size))) end
 
     (* Adding Functions *)
-    fun addToBucket (v,[])       = [v]
-      | addToBucket (v,(x::rol)) = if Real.==(v,x) then x::rol else x::addToBucket(v,rol);
+    fun addToBucket ((key,value),[])       = [(key,value)]
+      | addToBucket ((key,value),(x::rol)) = if Real.==(value,#2 x) then x::rol else x::addToBucket((key,value),rol);
 
-    fun insert(x,A) =
+    fun insert(key,value,A) =
       let
-        val bucket = hash(x);
-        val L = sub(A,bucket);
+        val bucket = hash(key)
+        val L = Array.sub(A,bucket)
       in
-        Array.update(A,bucket,addToBucket(x,L))
-      end;
-
-    (* Removal Functions *)
-    fun removeEntry(v,[])     = []
-      | removeEntry(v,x::rol) = if Real.==(v,x) then rol else x::removeEntry(v,rol);
-
-    fun delete(x,A) =
-      let
-        val bucket = hash(x);
-        val L = sub(A,bucket)
-      in
-        Array.update(A,bucket,removeEntry(x,L))
-      end;
+        Array.update(A,bucket,addToBucket((key,value),L));
+        value
+      end
 
     (* Lookup Functions *)
     fun search(v,[])     = false
-      | search(v,x::rol) = if Real.==(v,x) then true else search(v,rol);
+      | search(v,(k,_)::rol) = if Real.==(v,k) then true else search(v,rol)
 
-    fun lookup(x,A) = search(x,sub(A,hash(x)));
+    fun lookup(x,A) = search(x,Array.sub(A,hash(x)))
 
-    (* Get Functions - Must make call to lookup first, get will not check to ensure value exists *)
-    fun find(v,[])     = v (*Should never get here*)
-      | find(v,x::rol) = if Real.==(v,x) then x else find(v,rol)
+    (* Get Functions - Must make call to lookup first, get will not check to ensure key, value pair exists *)
+    fun find(v,[])          = v (*Should never get here*)
+      | find(v,(k,va)::rol) = if Real.==(v,k) then va else find(v,rol)
 
-    fun get(v,A) = find(v,sub(A,hash(v)))
+    fun get(v,A) = find(v,Array.sub(A,hash(v)))
 
     (* Hashtable Variable *)
-    val table = Array.array(size, [] : real list);
-  in
-    (fn x1 x2 => let
+    val table = Array.array(size, [] : (real * real) list)
+    fun memIntegral x1 x2 = 
+      let
         val stopAt = Real.round(Real.*(10.0,Real.-(x2,x1)))
         fun integrate (cur,sum,count) = 
           if count >= stopAt then sum 
           else if lookup(cur,table) then integrate((cur + 0.1), (sum + get(cur,table) * 0.1),Int.+(count,1)) 
-          else integrate((cur + 0.1), (sum + f(cur) * 0.1),Int.+(count,1))
-    in
-        integrate(x1,0.0,0)
-    end )
+          else integrate((cur + 0.1), (sum + insert(cur,f(cur),table) * 0.1),Int.+(count,1))
+      in
+          integrate(x1,0.0,0)
+      end 
+  in
+    memIntegral
   end
 
 
