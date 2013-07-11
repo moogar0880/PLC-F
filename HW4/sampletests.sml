@@ -9,9 +9,9 @@ val medSeq = ref (permutation [1])
 val largeSeq = ref (permutation ["1"])
 
 val r1 = [[1,2,3],[2,1,3],[2,3,1],[1,3,2],[3,1,2],[3,2,1]]
-val s1 = ["2", "3", "4", "5", "6", "7", "8", "9", "0", "1"]
-val s2 = ["7", "6", "3", "2", "0", "4", "1", "5", "9", "8"]
-val s3 = ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
+val s1 = ["2", "3", "4", "5", "6", "7", "8", "9", "0", "1"];
+val s2 = ["7", "6", "3", "2", "0", "4", "1", "5", "9", "8"];
+val s3 = ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"];
 
 fun contains l (SOME i) = List.exists (fn x => x = i) l
   | contains _ NONE = false
@@ -28,8 +28,8 @@ fun empty (Cons(NONE, _)) = true
 fun test1 () = (smallSeq := permutation [1,3,2]; not (empty (!smallSeq)))
 fun test2 () = (medSeq := permutation (List.tabulate (5, (fn x => x))); not (empty (!medSeq)))
 fun test3 () = (largeSeq := permutation (List.map (Int.toString) (List.tabulate (10, (fn x => x)))); not (empty (!largeSeq)))
-fun test4 () = 
-  let 
+fun test4 () =
+  let
     val s1 = permutation [5,6]
     val s2 = permutation ["hat","cat"]
   in
@@ -37,32 +37,32 @@ fun test4 () =
   end
 
 (* test 5 *)
-fun test5 () = 
-  let 
+fun test5 () =
+  let
     val seq = permutation []
-  in 
+  in
     next(seq) = SOME [] andalso next(rest(seq)) = NONE
   end
 
 (* test 6 *)
-fun test6 () = 
-  let 
+fun test6 () =
+  let
     val seq = !singleSeq
-  in 
+  in
     next(seq) = SOME [1] andalso next(rest(seq)) = NONE
   end
 
 (* test 7 *)
-fun test7 () = 
-  let 
+fun test7 () =
+  let
     val seq = !smallSeq
   in
     contains r1 (next (rest (rest (rest seq))))
   end
 
 (* test 8 *)
-fun test8 () = 
-  let 
+fun test8 () =
+  let
     val seq = !smallSeq
   in
     let fun f s = if next(s) <> NONE then (contains r1 (next s)) andalso (f (rest s)) else true
@@ -72,31 +72,31 @@ fun test8 () =
   end
 
 (* test 9 *)
-fun test9 () = false(*
-  let 
-    val seq = !largeSeq
+fun test9 () = false (*
+  let
+    val seq = !largeSeq;
   in
-    let 
+    let
       fun f s [] = true
         | f s l  = if (next s) <> NONE then f (rest s) (List.filter (fn x => x <> (unOption (next s))) l) else false
-    in 
+    in
       f seq [s1, s2, s3]
     end
   end*)
 
-(* test 10 *)                        
-fun test10 () = 
-  let 
+(* test 10 *)
+fun test10 () =
+  let
     val seq = !smallSeq
   in
-    let 
+    let
       fun f s acc = if next(s) <> NONE then (not (contains acc (next s))) andalso (f (rest s) ((unOption (next s))::acc)) else true
     in
       (f seq [])
     end
-  end 
+  end
 
-(* test 11 *)                        
+(* test 11 *)
 fun test11 () = (printPermutations (permutation ["1","2","3"]); true)
 
 (*==================================================Integral Tests==================================================*)
@@ -114,7 +114,7 @@ fun test14 () = eq ((integral constant 1.7 4.5), 14.0) 0.01
 
 (*================================================Integralmem Tests================================================*)
 fun time f x1 x2 =
-  let 
+  let
     val rt = Timer.startRealTimer()
     val res = f x1 x2
     val t = Time.toReal(Timer.checkRealTimer rt)
@@ -128,8 +128,8 @@ fun makeCoeff 0 = []
 val coeff1 = makeCoeff 3;
 val coeff2 = makeCoeff 10;
 
-fun polynomial l x = 
-  let 
+fun polynomial l x =
+  let
     fun poly (c::ct) e = (c*(Math.pow (x, e))) + (poly ct (e-1.0))
       | poly _ _ = 0.0
   in
@@ -137,16 +137,16 @@ fun polynomial l x =
   end
 
 (* test 15 *)
-fun test15 () = 
-  let 
+fun test15 () =
+  let
     val f = time (integralMem (polynomial coeff1));
   in
     ((f 0.0 100.0) > (f 0.0 100.0))
   end
 
 (* test 16 *)
-fun test16 () = 
-  let 
+fun test16 () =
+  let
     val f1 = integralMem parabola;
     val f2 = integralMem constant
     val f1r1 = f1 0.0 10.0
@@ -158,8 +158,8 @@ fun test16 () =
   end
 
 (* test 17 *)
-fun test17 () = 
-  let 
+fun test17 () =
+  let
     val f = time (integralMem (polynomial coeff2))
   in
     ((f 0.0 300.0) > (f 0.0 300.0))

@@ -4,5 +4,5 @@ Tests failed: [test9 large sequence contains a few particular permutations]
 
 Tests failed with an exception: 
 
-Total time: 0.063568
+Total time: 0.08171
 Grade: 94.1 / 100

@@ -28,13 +28,13 @@ fun permutation [] = Cons(SOME [], fn() => nullSeq [])
         (* Simple sorting method for lists/tuples *)
         fun sort []  = []
           | sort [v] = [v]
-          | sort ((v,w)::(x,z)::rol) = if v >= x then sort ((x,z)::(sort ((v,w)::rol))) else (v,w)::(sort ((x,z)::rol))
+          | sort ((v,w)::(x,z)::rol) = if v >= x then sort ((x,z)::(sort ((v,w)::rol))) else (v,w)::(sort ((x,z)::rol));
         (* Return the value with the smallest value that is bigger than v *)
         fun nextLargest (((x,y)::[]),v)  = (x,y)
-          | nextLargest (((x,y)::rol),v) = 
+          | nextLargest (((x,y)::rol),v) =
           let
-            val sorted = sort(rol)
-            val value  = #1 (hd sorted)
+            val sorted = sort(rol);
+            val value  = #1 (hd sorted);
           in
             if value > x andalso value <> v then hd sorted else nextLargest(sorted,v)
           end
@@ -71,10 +71,8 @@ fun permutation [] = Cons(SOME [], fn() => nullSeq [])
    val next = fn : ’a permutationSeq -> ’a option 10pts *)
 fun next s =
   let
-    fun getValueList [] = []
-      | getValueList ((_,y)::rol)   = y::getValueList(rol)
     fun getNext (Cons(NONE, ros))   = NONE
-      | getNext (Cons(SOME x, ros)) = SOME (getValueList(x))
+      | getNext (Cons(SOME x, ros)) = SOME (#2 (ListPair.unzip(x)))
   in
       getNext(s)
   end
@@ -136,7 +134,7 @@ fun integral f x1 x2 = if Real.<(x2,x1) then 0.0 else
    It must at least make use of information for the individual “rectangles”, but can
    also make use of information about the ranges and increase performance in some cases
    val integralMem = (fn : real -> real) -> fn : real -> real -> real 25pts *)
-fun integralMem f = 
+fun integralMem f =
   let
     (* Hashtable Implementation *)
     val size = 1000
@@ -171,72 +169,16 @@ fun integralMem f =
 
     (* Hashtable Variable *)
     val table = Array.array(size, [] : (real * real) list)
-    fun memIntegral x1 x2 = 
+    fun memIntegral x1 x2 =
       let
         val stopAt = Real.round(Real.*(10.0,Real.-(x2,x1)))
-        fun integrate (cur,sum,count) = 
-          if count >= stopAt then sum 
-          else if lookup(cur,table) then integrate((cur + 0.1), (sum + get(cur,table) * 0.1),Int.+(count,1)) 
+        fun integrate (cur,sum,count) =
+          if count >= stopAt then sum
+          else if lookup(cur,table) then integrate((cur + 0.1), (sum + get(cur,table) * 0.1),Int.+(count,1))
           else integrate((cur + 0.1), (sum + insert(cur,f(cur),table) * 0.1),Int.+(count,1))
       in
           integrate(x1,0.0,0)
-      end 
+      end
   in
     memIntegral
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
