@@ -16,7 +16,7 @@ fun permutation [] = Cons(SOME [], fn() => nullSeq [])
       let
         (* Search by index *)
         fun find ([],_) = []
-          | find (((x,y)::rol),v) = if x = v then ((x,y)::rol) else find(rol,v)
+          | find (((x,y)::rol),v) = if x = v then ((x,y)::rol) else find(rol,v);
         (* Search by list index, not entries index *)
         fun findByLI ([],_,_) = []
           | findByLI ((x::rol),v,i) = if i = v then (x::rol) else findByLI(rol,v,i+1)
