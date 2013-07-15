@@ -10,10 +10,10 @@ fun modulo (_,0) = 0
   end
 
 (* val andEval = fn : (bool * bool) -> bool *)
-fun andEval (x,y) = if (x andalso y) andalso (y andalso x) then true else false
+fun andEval (x,y) = if (x() andalso y()) andalso (y() andalso x()) then true else false
 
 (* val orEval = fn : (bool * bool) -> bool *)
-fun orEval (x,y) = if (x orelse y) andalso (y orelse x) then true else false
+fun orEval (x,y) = if (x() orelse y()) andalso (y() orelse x()) then true else false
 
 (* val nOutOfOrder = fn : (('a * 'a) -> bool) -> a' list -> int *)
 fun nOutOfOrder opr [] = 0
@@ -56,7 +56,7 @@ fun combinations (0,l)   = [[]]
   end
 
 (* val bestAlign = fn : (string * string) -> (string * int) *)
-fun bestAlign ("", "") = raise NotImplemented
+fun bestAlign "" "" = ("",0)
 
 (* val printAlign = fn : string -> string -> string -> int -> () *)
 fun printAlign s1 s2 match shift = 
