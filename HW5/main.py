@@ -56,32 +56,33 @@ function should make use of memoization to drastically improve the speed
 of results
 '''
 def nthPrime(n):
-    if 'primes' not in locals():
-        primes = [1]
-        locals()['primes'] = primes
-    n = n+1
-    if len(locals()['primes']) >= n:
-        return locals()['primes'][n-1]
+    if nthPrime.primes != None:
+        pass
     else:
-        size = len(locals()['primes'])
-        i = locals()['primes'][size - 1] + 1
-        while len(locals()['primes']) < n:
+        nthPrime.primes = [1]
+    n = n+1
+    if len(nthPrime.primes) >= n:
+        return nthPrime.primes[n-1]
+    else:
+        size = len(nthPrime.primes)
+        i = nthPrime.primes[size - 1] + 1
+        while len(nthPrime.primes) < n:
             prime = True
-            if i == 2 and 2 not in primes:
+            if i == 2 and 2 not in nthPrime.primes:
                 pass
             elif i % 2 == 0:
                 prime = False
             else:
-                #for v in range(3,int(math.sqrt(i)),2):
-                for v in locals()['primes']:
+                for v in nthPrime.primes:
                     if v != 1 and i % v == 0:
                         prime = False
                         break
             if prime:
-                locals()['primes'].append(i)
-                if len(locals()['primes']) == n:
+                nthPrime.primes.append(i)
+                if len(nthPrime.primes) == n:
                     return i
             i += 1
+nthPrime.primes = None
 
 class USDollar(object):
     """docstring for USDollar"""
@@ -270,5 +271,5 @@ class Tester(object):
         self.uSDTests()
         print "{}/{} => {}".format(self.score,self.total,100.0*float(self.score/self.total))
 
-t = Tester()
-t.runTests()
+#t = Tester()
+#t.runTests()
