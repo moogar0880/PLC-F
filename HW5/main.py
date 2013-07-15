@@ -87,105 +87,89 @@ class USDollar(object):
     """docstring for USDollar"""
     def __init__(self,value=0.0):
         super(USDollar, self).__init__()
-        self.val = value
+        self.val = self.truncate(value)
         #print self.__dict__
+
+    def truncate(self,value):
+        tmp = int(value*100)
+        return float(tmp)/100.0
 
     def __repr__(self):
         return "${0:.2f}".format(float(self.val))
 
     def __add__(self,other): #+
-        if isinstance(other,float):
-           return USDollar(round(self.val + other,2))
-        elif isinstance(other,int):
-           return USDollar(round(self.val + float(other),2))
+        if isinstance(other,float) or isinstance(other,int):
+           return USDollar(self.truncate(self.val) + self.truncate(other))
         elif isinstance(other,USDollar):
-           return USDollar(round(self.val + other.val,2))
+           return USDollar(self.truncate(self.val) + self.truncate(other.val))
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __sub__(self,other): #-
-        if isinstance(other,float):
-           return USDollar(round(self.val - other,2))
-        elif isinstance(other,int):
-           return USDollar(round(self.val - float(other),2))
+        if isinstance(other,float) or isinstance(other,int):
+           return USDollar(self.truncate(self.val) - self.truncate(other))
         elif isinstance(other,USDollar):
-           return USDollar(round(self.val + other.val,2))
+           return USDollar(self.truncate(self.val) - self.truncate(other.val))
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __iadd__(self,other): #+=
-        if isinstance(other,float):
-           self.val += round(other,2)
-           return self
-        elif isinstance(other,int):
-           self.val += round(float(other),2)
+        if isinstance(other,float) or isinstance(other,int):
+           self.val += self.truncate(other)
            return self
         elif isinstance(other,USDollar):
-           self.val += round(other.val,2)
+           self.val += self.truncate(other.val)
            return self
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __isub__(self,other): #-=
-        if isinstance(other,float):
-           self.val -= round(other,2)
-           return self
-        elif isinstance(other,int):
-           self.val -= round(float(other),2)
+        if isinstance(other,float) or isinstance(other,int):
+           self.val -= self.truncate(other)
            return self
         elif isinstance(other,USDollar):
-           self.val -= round(other.val,2)
+           self.val -= self.truncate(other.val)
            return self
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __eq__(self,other): # ==
-        if isinstance(other,float):
-           return self.val == other
-        elif isinstance(other,int):
-           return self.val == float(other)
+        if isinstance(other,float) or isinstance(other,int):
+           return self.truncate(self.val) == self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.val == other.val
+           return self.truncate(self.val) == self.truncate(other.val)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __le__(self,other): #<=
-        if isinstance(other,float):
-           return self.val <= other
-        elif isinstance(other,int):
-           return self.val <= float(other)
+        if isinstance(other,float) or isinstance(other,int):
+           return self.truncate(self.val) <= self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.val <= other.val
+           return self.truncate(self.val) <= self.truncate(other.val)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __ge__(self,other): #>=
-        if isinstance(other,float):
-           return self.val >= other
-        elif isinstance(other,int):
-           return self.val >= float(other)
+        if isinstance(other,float) or isinstance(other,int):
+           return self.truncate(self.val) >= self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.val >= other.val
+           return self.truncate(self.val) >= self.truncate(other.val)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __lt__(self,other): #<
-        if isinstance(other,float):
-           return self.val < other
-        elif isinstance(other,int):
-           return self.val < float(other)
+        if isinstance(other,float) or isinstance(other,int):
+           return self.truncate(self.val) < self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.val < other.val
+           return self.truncate(self.val) < self.truncate(other.val)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __gt__(self,other): #>
-        if isinstance(other,float):
-           return self.val > other
-        elif isinstance(other,int):
-           return self.val > float(other)
+        if isinstance(other,float) or isinstance(other,int):
+           return self.truncate(self.val) > self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.val > other.val
+           return self.truncate(self.val) > self.truncate(other.val)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
@@ -246,6 +230,7 @@ class Tester(object):
         #Check innate rounding, d1.val == 2.0
         results.append(d1.val == 2.0)
         #Check __repr__
+        print "\t", d1.__repr__() == '$2.00'
         results.append(d1.__repr__() == '$2.00')
         #Check += float
         d1 += 2.0
@@ -278,14 +263,12 @@ class Tester(object):
         self.printResults(results,'uSDTests')
 
     def runTests(self):
-        #self.filterTests()
-        #self.matchBracketTests()
-        #self.wordCountsTests()
+        self.filterTests()
+        self.matchBracketTests()
+        self.wordCountsTests()
         self.nthPrimeTests()
-        #self.uSDTests()
+        self.uSDTests()
         print "{}/{} => {}".format(self.score,self.total,100.0*float(self.score/self.total))
 
 t = Tester()
 t.runTests()
-
-#print sundaram3(100)
