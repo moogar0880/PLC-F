@@ -74,6 +74,7 @@ fun combinations (0,l)      = [[]]
 fun bestAlign "" "" = ("",0)
   | bestAlign "" _  = ("",0)
   | bestAlign _  "" = ("",0)
+  | bestAlign s1 s2 = (s1,String.size(s2)-String.size(s1))
 
 (* val printAlign = fn : string -> string -> string -> int -> () *)
 fun printAlign s1 s2 match shift = 
