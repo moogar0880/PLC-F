@@ -207,4 +207,4 @@ val allTests =
      (2.5, "printAlign with positive shift", test42),
      (2.5, "printAlign with negative shift", test43)]
 
-val _ = Grading.saveToFile 100 (Grading.run allTests) "tests.res"
+(*val _ = Grading.saveToFile 100 (Grading.run allTests) "tests.res"*)

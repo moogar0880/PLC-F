@@ -9,11 +9,29 @@ fun modulo (_,0) = 0
       getMod(x)
   end
 
+(* val lcm = fn : (int * int) ->int *)
+fun lcm (0,_) = 0
+  | lcm (_,0) = 0
+  | lcm (x,y) = 
+  let
+    fun findLcm (base,mult,v) = if modulo(mult,v) = 0 then mult else findLcm(base,mult+base,v)
+  in
+    if x > y then findLcm(x,x,y) else findLcm(y,y,x)
+  end
+
 (* val andEval = fn : (bool * bool) -> bool *)
-fun andEval (x,y) = if (x() andalso y()) andalso (y() andalso x()) then true else false
+fun andEval (x,y) = if x() andalso y() then true else false
 
 (* val orEval = fn : (bool * bool) -> bool *)
-fun orEval (x,y) = if (x() orelse y()) andalso (y() orelse x()) then true else false
+fun orEval (x,y) = 
+  let
+    fun doOr(false,false) = false
+      | doOr(true,false)  = true
+      | doOr(false,true)  = true
+      | doOr(true,true)   = true
+  in
+    doOr(x(),y())
+  end
 
 (* val nOutOfOrder = fn : (('a * 'a) -> bool) -> a' list -> int *)
 fun nOutOfOrder opr [] = 0
@@ -42,21 +60,20 @@ fun permutations [] = [[]]
   end
 
 (* val combinarions = fn : (int * 'a list) -> 'a list list *)
-fun combinations (0,l)   = [[]]
-  | combinations (i,[])  = [[]]
-  | combinations (i,lst) =
+fun combinations (0,l)      = [[]]
+  | combinations (i,[])     = [[]]
+  | combinations (i,x::rol) = 
   let
-      fun easy [] = []
-        | easy l  = List.take(l,i)::easy(tl l)
-        handle Subscript => easy []
-      fun permute [] = []
-        | permute (h::rol) = (permutations h)@(permute rol)
+    fun cleanup []       = []
+      | cleanup (x::rol) = if List.length(x) <> i then cleanup(rol) else x::cleanup(rol)
   in
-      permute(easy(lst))
+    cleanup(List.map (fn y => x :: y) (combinations (i-1, rol))@combinations (i, rol))
   end
 
 (* val bestAlign = fn : (string * string) -> (string * int) *)
 fun bestAlign "" "" = ("",0)
+  | bestAlign "" _  = ("",0)
+  | bestAlign _  "" = ("",0)
 
 (* val printAlign = fn : string -> string -> string -> int -> () *)
 fun printAlign s1 s2 match shift = 
@@ -64,8 +81,8 @@ fun printAlign s1 s2 match shift =
     fun printSpaces(0) = ""
       | printSpaces(i) = if i > 0 then " "^printSpaces(i-1) else " "^printSpaces(i+1)
   in
-    if shift >= 0 then print(s1^"\n"^printSpaces(shift)^s2^"\n"^printSpaces(shift)^match)
-    else print(printSpaces(shift)^s1^"\n"^s2^"\n"^printSpaces(shift)^match)
+    if shift <= 0 then print(s1^"\n"^printSpaces(shift)^s2^"\n"^printSpaces(shift)^match^"\n")
+    else print(printSpaces(shift)^s1^"\n"^s2^"\n"^printSpaces(shift)^match^"\n")
   end
 
 (* -----------------------EXTRA CREDIT----------------------- *)
@@ -87,14 +104,4 @@ fun commonFactors (x,y) =
         | inCommon (x::rol,li) = search(x,li)@inCommon(rol,li)
   in
       inCommon(factorize(x,2),factorize(y,2))
-  end
-
-(* val lcm = fn : (int * int) ->int *)
-fun lcm (0,0) = 0
-  | lcm (x,y) = 
-  let
-    fun pullOut (a,b) = a
-  in
-    pullOut(hd (commonFactors(x,y)))
-    handle Empty => if x = y then x else 0
   end
