@@ -5,11 +5,11 @@ Takes a function, f, and a list, lst, and returns a list containing only
 elements of lst for which f evaluates to True
 '''
 def filter(f, l=[]):
-    toRet = []
-    for item in l:
-        if f(item):
-            toRet.append(item)
-    return toRet
+  toRet = []
+  for item in l:
+    if f(item):
+      toRet.append(item)
+  return toRet
 
 '''
 Looks at a string, s, and determines whether all brackets ((), {}, [], <>)
@@ -17,16 +17,16 @@ have a matched pair and are closed in the same order in which they were
 opened
 '''
 def matchBrackets(s):
-    openBrackets = ['(','{','[','<']
-    closBrackets = [')','}',']','>']
-    stack        = []
-    for char in s:
-        if char in openBrackets:
-            stack.append(char)
-        elif char in closBrackets:
-            if openBrackets.index(stack.pop()) != closBrackets.index(char):
-                return False
-    return len(stack) == 0
+  openBrackets = ['(','{','[','<']
+  closBrackets = [')','}',']','>']
+  stack        = []
+  for char in s:
+    if char in openBrackets:
+      stack.append(char)
+    elif char in closBrackets:
+      if openBrackets.index(stack.pop()) != closBrackets.index(char):
+        return False
+  return len(stack) == 0
 
 '''
 Looks at the words in the string, s, and returns a list of tuples in the
@@ -55,123 +55,130 @@ function should make use of memoization to drastically improve the speed
 of results
 '''
 def nthPrime(n):
-    if nthPrime.primes != None:
+  if nthPrime.primes != None:
+    pass
+  else:
+    nthPrime.primes = [1]
+  n = n+1
+  if len(nthPrime.primes) >= n:
+    return nthPrime.primes[n-1]
+  else:
+    size = len(nthPrime.primes)
+    i = nthPrime.primes[size - 1] + 1
+    while len(nthPrime.primes) < n:
+      prime = True
+      if i == 2 and 2 not in nthPrime.primes:
         pass
-    else:
-        nthPrime.primes = [1]
-    n = n+1
-    if len(nthPrime.primes) >= n:
-        return nthPrime.primes[n-1]
-    else:
-        size = len(nthPrime.primes)
-        i = nthPrime.primes[size - 1] + 1
-        while len(nthPrime.primes) < n:
-            prime = True
-            if i == 2 and 2 not in nthPrime.primes:
-                pass
-            elif i % 2 == 0:
-                prime = False
-            else:
-                for v in nthPrime.primes:
-                    if v != 1 and i % v == 0:
-                        prime = False
-                        break
-            if prime:
-                nthPrime.primes.append(i)
-                if len(nthPrime.primes) == n:
-                    return i
-            i += 1
+      elif i % 2 == 0:
+        prime = False
+      else:
+        for v in nthPrime.primes:
+          if v != 1 and i % v == 0:
+            prime = False
+            break
+      if prime:
+        nthPrime.primes.append(i)
+        if len(nthPrime.primes) == n:
+            return i
+      i += 1
 nthPrime.primes = None
 
 class USDollar(object):
-    """docstring for USDollar"""
-    def __init__(self,value=0.0):
-        super(USDollar, self).__init__()
-        self.value = self.truncate(value)
-        #print self.__dict__
+  """docstring for USDollar"""
+  def __init__(self,value=0.0):
+    super(USDollar, self).__init__()
+    self.value = self.truncate(value)
 
-    def truncate(self,value):
-        tmp = int(value*100)
-        return float(tmp)/100.0
+  def truncate(self,value):
+    tmp = int(value*100)
+    return float(tmp)/100.0
 
-    def __repr__(self):
-        return "${0:.2f}".format(float(self.value))
+  def __repr__(self):
+    return "${0:.2f}".format(float(self.value))
 
-    def __add__(self,other): #+
-        if isinstance(other,float) or isinstance(other,int):
-           return USDollar(self.truncate(self.value) + self.truncate(other))
-        elif isinstance(other,USDollar):
-           return USDollar(self.truncate(self.value) + self.truncate(other.value))
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __add__(self,other): #+
+    if isinstance(other,float) or isinstance(other,int):
+      return USDollar(self.truncate(self.value) + self.truncate(other))
+    elif isinstance(other,USDollar):
+      return USDollar(self.truncate(self.value) + self.truncate(other.value))
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __sub__(self,other): #-
-        if isinstance(other,float) or isinstance(other,int):
-           return USDollar(self.truncate(self.value) - self.truncate(other))
-        elif isinstance(other,USDollar):
-           return USDollar(self.truncate(self.value) - self.truncate(other.value))
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __sub__(self,other): #-
+    if isinstance(other,float) or isinstance(other,int):
+      return USDollar(self.truncate(self.value) - self.truncate(other))
+    elif isinstance(other,USDollar):
+      return USDollar(self.truncate(self.value) - self.truncate(other.value))
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __iadd__(self,other): #+=
-        if isinstance(other,float) or isinstance(other,int):
-           self.value += self.truncate(other)
-           return self
-        elif isinstance(other,USDollar):
-           self.value += self.truncate(other.value)
-           return self
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __iadd__(self,other): #+=
+    if isinstance(other,float) or isinstance(other,int):
+      self.value += self.truncate(other)
+      return self
+    elif isinstance(other,USDollar):
+      self.value += self.truncate(other.value)
+      return self
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __isub__(self,other): #-=
-        if isinstance(other,float) or isinstance(other,int):
-           self.value -= self.truncate(other)
-           return self
-        elif isinstance(other,USDollar):
-           self.value -= self.truncate(other.value)
-           return self
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __isub__(self,other): #-=
+    if isinstance(other,float) or isinstance(other,int):
+      self.value -= self.truncate(other)
+      return self
+    elif isinstance(other,USDollar):
+      self.value -= self.truncate(other.value)
+      return self
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __eq__(self,other): # ==
-        if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.value) == self.truncate(other)
-        elif isinstance(other,USDollar):
-           return self.truncate(self.value) == self.truncate(other.value)
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __eq__(self,other): # ==
+    if isinstance(other,float) or isinstance(other,int):
+      return self.truncate(self.value) == self.truncate(other)
+    elif isinstance(other,USDollar):
+      return self.truncate(self.value) == self.truncate(other.value)
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __le__(self,other): #<=
-        if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.value) <= self.truncate(other)
-        elif isinstance(other,USDollar):
-           return self.truncate(self.value) <= self.truncate(other.value)
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __ne__(self,other): #!=
+    if isinstance(other,float) or isinstance(other,int):
+      return self.truncate(self.value) != self.truncate(other)
+    elif isinstance(other,USDollar):
+      return self.truncate(self.value) != self.truncate(other.value)
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __ge__(self,other): #>=
-        if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.value) >= self.truncate(other)
-        elif isinstance(other,USDollar):
-           return self.truncate(self.value) >= self.truncate(other.value)
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __le__(self,other): #<=
+    if isinstance(other,float) or isinstance(other,int):
+      return self.truncate(self.value) <= self.truncate(other)
+    elif isinstance(other,USDollar):
+      return self.truncate(self.value) <= self.truncate(other.value)
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __lt__(self,other): #<
-        if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.value) < self.truncate(other)
-        elif isinstance(other,USDollar):
-           return self.truncate(self.value) < self.truncate(other.value)
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __ge__(self,other): #>=
+    if isinstance(other,float) or isinstance(other,int):
+      return self.truncate(self.value) >= self.truncate(other)
+    elif isinstance(other,USDollar):
+      return self.truncate(self.value) >= self.truncate(other.value)
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __gt__(self,other): #>
-        if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.value) > self.truncate(other)
-        elif isinstance(other,USDollar):
-           return self.truncate(self.value) > self.truncate(other.value)
-        else:
-           raise TypeError("{} is an invalid type".format(type(other)))
+  def __lt__(self,other): #<
+    if isinstance(other,float) or isinstance(other,int):
+      return self.truncate(self.value) < self.truncate(other)
+    elif isinstance(other,USDollar):
+      return self.truncate(self.value) < self.truncate(other.value)
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
 
-    def __str__(self):
-        return self.__repr__()
+  def __gt__(self,other): #>
+    if isinstance(other,float) or isinstance(other,int):
+      return self.truncate(self.value) > self.truncate(other)
+    elif isinstance(other,USDollar):
+      return self.truncate(self.value) > self.truncate(other.value)
+    else:
+      raise TypeError("{} is an invalid type".format(type(other)))
+
+  def __str__(self):
+    return self.__repr__()
