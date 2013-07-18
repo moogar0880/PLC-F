@@ -268,25 +268,25 @@ class TestUSDollar(unittest.TestCase):
   def testOne(self):
     orig = 1.0
     result = 1.0
-    self.assertEqual(main.USDollar(orig).val, result)
+    self.assertEqual(main.USDollar(orig).value, result)
 
   @timeout(1)
   def testCents(self):
     orig = 1.05
     result = 1.05
-    self.assertEqual(main.USDollar(orig).val, result)
+    self.assertEqual(main.USDollar(orig).value, result)
 
   @timeout(1)
   def testLow(self):
     orig = 2.001
     result = 2.0
-    self.assertEqual(main.USDollar(orig).val, result)
+    self.assertEqual(main.USDollar(orig).value, result)
 
   @timeout(1)
   def testHigh(self):
     orig = 2.999
     result = 2.99
-    self.assertEqual(main.USDollar(orig).val, result)
+    self.assertEqual(main.USDollar(orig).value, result)
 
   @timeout(1)
   def testStrLow(self):
@@ -373,22 +373,22 @@ class TestUSDollar(unittest.TestCase):
     orig = 6.009
     result = 8.0
     ret = (main.USDollar(orig)+main.USDollar(2.001))
-    self.assertEqual(ret.val, result)
+    self.assertEqual(ret.value, result)
     ret = (main.USDollar(orig)+2.001)
-    self.assertEqual(ret.val, result)
+    self.assertEqual(ret.value, result)
     ret = (main.USDollar(orig)+int(2.001))
-    self.assertEqual(ret.val, result)
+    self.assertEqual(ret.value, result)
 
   @timeout(1)
   def testSub(self):
     orig = 3.009
     result = 1.0
     ret = (main.USDollar(orig)-main.USDollar(2.001))
-    self.assertEqual(ret.val, result)
+    self.assertEqual(ret.value, result)
     ret = (main.USDollar(orig)-2.001)
-    self.assertEqual(ret.val, result)
+    self.assertEqual(ret.value, result)
     ret = (main.USDollar(orig)-int(2.001))
-    self.assertEqual(ret.val, result)
+    self.assertEqual(ret.value, result)
 
   @timeout(1)
   def testiAdd(self):
@@ -396,13 +396,13 @@ class TestUSDollar(unittest.TestCase):
     result = 8.0
     d = main.USDollar(orig)
     d += main.USDollar(2.001)
-    self.assertEqual(d.val, result)
+    self.assertEqual(d.value, result)
     d = main.USDollar(orig)
     d += 2.001
-    self.assertEqual(d.val, result)
+    self.assertEqual(d.value, result)
     d = main.USDollar(orig)
     d += int(2.001)
-    self.assertEqual(d.val, result)
+    self.assertEqual(d.value, result)
 
   @timeout(1)
   def testiSub(self):
@@ -410,13 +410,13 @@ class TestUSDollar(unittest.TestCase):
     result = 1.0
     d = main.USDollar(orig)
     d -= main.USDollar(2.001)
-    self.assertEqual(d.val, result)
+    self.assertEqual(d.value, result)
     d = main.USDollar(orig)
     d -= 2.001
-    self.assertEqual(d.val, result)
+    self.assertEqual(d.value, result)
     d = main.USDollar(orig)
     d -= int(2.001)
-    self.assertEqual(d.val, result)
+    self.assertEqual(d.value, result)
 
   @timeout(1)
   def usdExceptions(self):

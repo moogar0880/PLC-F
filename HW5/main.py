@@ -87,7 +87,7 @@ class USDollar(object):
     """docstring for USDollar"""
     def __init__(self,value=0.0):
         super(USDollar, self).__init__()
-        self.val = self.truncate(value)
+        self.value = self.truncate(value)
         #print self.__dict__
 
     def truncate(self,value):
@@ -95,81 +95,81 @@ class USDollar(object):
         return float(tmp)/100.0
 
     def __repr__(self):
-        return "${0:.2f}".format(float(self.val))
+        return "${0:.2f}".format(float(self.value))
 
     def __add__(self,other): #+
         if isinstance(other,float) or isinstance(other,int):
-           return USDollar(self.truncate(self.val) + self.truncate(other))
+           return USDollar(self.truncate(self.value) + self.truncate(other))
         elif isinstance(other,USDollar):
-           return USDollar(self.truncate(self.val) + self.truncate(other.val))
+           return USDollar(self.truncate(self.value) + self.truncate(other.value))
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __sub__(self,other): #-
         if isinstance(other,float) or isinstance(other,int):
-           return USDollar(self.truncate(self.val) - self.truncate(other))
+           return USDollar(self.truncate(self.value) - self.truncate(other))
         elif isinstance(other,USDollar):
-           return USDollar(self.truncate(self.val) - self.truncate(other.val))
+           return USDollar(self.truncate(self.value) - self.truncate(other.value))
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __iadd__(self,other): #+=
         if isinstance(other,float) or isinstance(other,int):
-           self.val += self.truncate(other)
+           self.value += self.truncate(other)
            return self
         elif isinstance(other,USDollar):
-           self.val += self.truncate(other.val)
+           self.value += self.truncate(other.value)
            return self
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __isub__(self,other): #-=
         if isinstance(other,float) or isinstance(other,int):
-           self.val -= self.truncate(other)
+           self.value -= self.truncate(other)
            return self
         elif isinstance(other,USDollar):
-           self.val -= self.truncate(other.val)
+           self.value -= self.truncate(other.value)
            return self
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __eq__(self,other): # ==
         if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.val) == self.truncate(other)
+           return self.truncate(self.value) == self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.truncate(self.val) == self.truncate(other.val)
+           return self.truncate(self.value) == self.truncate(other.value)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __le__(self,other): #<=
         if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.val) <= self.truncate(other)
+           return self.truncate(self.value) <= self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.truncate(self.val) <= self.truncate(other.val)
+           return self.truncate(self.value) <= self.truncate(other.value)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __ge__(self,other): #>=
         if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.val) >= self.truncate(other)
+           return self.truncate(self.value) >= self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.truncate(self.val) >= self.truncate(other.val)
+           return self.truncate(self.value) >= self.truncate(other.value)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __lt__(self,other): #<
         if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.val) < self.truncate(other)
+           return self.truncate(self.value) < self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.truncate(self.val) < self.truncate(other.val)
+           return self.truncate(self.value) < self.truncate(other.value)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
     def __gt__(self,other): #>
         if isinstance(other,float) or isinstance(other,int):
-           return self.truncate(self.val) > self.truncate(other)
+           return self.truncate(self.value) > self.truncate(other)
         elif isinstance(other,USDollar):
-           return self.truncate(self.val) > self.truncate(other.val)
+           return self.truncate(self.value) > self.truncate(other.value)
         else:
            raise TypeError("{} is an invalid type".format(type(other)))
 
