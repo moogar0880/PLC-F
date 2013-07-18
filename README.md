@@ -25,4 +25,4 @@ Python #1, This program covered introductory Python functions such as implementi
 
 HW6
 -----
-Python #2, not yet assigned
+Python #2, This program more algorithmic topics, such as encoding and decyphering messages and automated word detection using a Trie of custom Node objects.
