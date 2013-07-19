@@ -4,24 +4,18 @@ Accepts the string 'message' and shifts all of the alphabetical characters in
 it 'shift' steps in the alphabet. If no value is given for shift the value
 defaults to 13.
 '''
-def encode(*args):
-    message = args[0]
-    if len(args) > 1:
-        shift = args[1]
-    else:
-        shift = 13
-
-    alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
-                "p","q","r","s","t","u","v","w","x","y","z"]
+def encode(message,shift=13):
+    alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
+                'p','q','r','s','t','u','v','w','x','y','z']
     shiftAlphabet = {}
-    for i in range(0, len(alphabet)):
+    for i in range(len(alphabet)):
         shiftAlphabet[alphabet[i]] = alphabet[(i + shift) % len(alphabet)]
-
-    output = ""
+    output = ''
     for x in message.lower():
         if x in shiftAlphabet:
-            x = shiftAlphabet[x]
-        output += x
+            output += shiftAlphabet[x]
+        else:
+            output += x
     return output
 
 '''
@@ -30,10 +24,10 @@ letter in the encoded message and by attempting to decrypt it based on the
 frequency of letters used in the english alphabet.
 '''
 def tryShifts(message):
-    letterTable = ["e","t","a","o","i","n","s","h","r","d","l","u","c","m","f",
-                    "w","y","p","v","b","g","k","q","j","x","z"]
-    alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
-                "p","q","r","s","t","u","v","w","x","y","z"]
+    letterTable = ['e','t','a','o','i','n','s','h','r','d','l','u','c','m','f',
+                   'w','y','p','v','b','g','k','q','j','x','z']
+    alphabet    = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
+                   'p','q','r','s','t','u','v','w','x','y','z']
     frequencies = {}
     for i in message.lower():
         if i.isalpha():
@@ -41,30 +35,16 @@ def tryShifts(message):
                 frequencies[i] = frequencies[i] + 1
             else:
                 frequencies[i] = 1
-    mostFreq = sorted(frequencies.iteritems(), key=lambda (k,v): (v,k))[-1]
-    mostFreq = mostFreq[0]
-    output = []
-    mostFreqLoc = -1
-    replaceLoc = -1
-    for i in range(0,len(letterTable)):
-        for j in range(0,len(alphabet)):
-            if alphabet[j] == mostFreq:
-                mostFreqLoc = j
-            if alphabet[j] == letterTable[i]:
-                replaceLoc = j
-            if replaceLoc >= 0 and mostFreqLoc >= 0:
-                if mostFreqLoc > replaceLoc:
-                    output.append(encode(message,(mostFreqLoc-replaceLoc)))
-                    replaceLoc = -1
-                    mostFreqLoc = -1
-                elif mostFreqLoc < replaceLoc:
-                    output.append(encode(message,-(replaceLoc-mostFreqLoc)))
-                    replaceLoc = -1
-                    mostFreqLoc = -1
-                else:
-                    output.append(encode(message,0))
-                    replaceLoc = -1
-                    mostFreqLoc = -1
+    mostFreq = sorted(frequencies.iteritems(), key=lambda (k,v): (v,k))[-1][0]
+    output   = []
+    mostFreqLoc = alphabet.index(mostFreq)
+    for i in range(len(letterTable)):
+        if mostFreqLoc > i:
+            output.append(encode(message,(mostFreqLoc-i)))
+        elif mostFreqLoc < i:
+            output.append(encode(message,-(i-mostFreqLoc)))
+        else:
+            output.append(encode(message,0))
     return output.__iter__()
 
 '''
@@ -91,10 +71,7 @@ class Trie:
 #        return self.commonPrefixes
 
     def __contains__(self,data):
-        if self.root.find(data,1) == None:
-            return False
-        else:
-            return True
+        return self.root.find(data,1) != None:
 
     def add(self, data):
         self.root.add(data,self.root)
@@ -111,7 +88,7 @@ class Trie:
                 self.data = self.parent.data + data
             else:
                 self.depth = 0 #only applicable to the root node
-                self.data = ""
+                self.data = ''
             if self.depth > 2: #only care about prefixes with length > 2
                 self.count = 1
             else:
@@ -119,8 +96,8 @@ class Trie:
 
 
         def add(self, data, parent):
-            if data != "":
-                for i in range(0,len(self.children)):
+            if data != '':
+                for i in range(len(self.children)):
                     if (parent.data + data[0]) == self.children[i].data:
                         child = self.children[i]
                         if child.count != None:
@@ -133,7 +110,7 @@ class Trie:
 
         def find(self, data, i):
             node = None
-            for k in range(0,len(self.children)):
+            for k in range(len(self.children)):
                 if data[0:i] == self.children[k].data:
                     node = self.children[k]
                     if i == len(data):
@@ -163,13 +140,12 @@ def decode(message, dictfilename):
     t = Trie()
     infile = open(dictfilename)
     [t.add(w.strip()) for w in infile]
-    iterator = tryShifts(message)
-    for i in iterator:
+    for i in tryShifts(message):
         words = str.split(i)
         total = len(words)
         current = 0
         for j in words:
-            word = j.translate(string.maketrans("",""), string.punctuation)
+            word = j.translate(string.maketrans('',''), string.punctuation)
             if word in t:
                 current += 1
             if float(current)/float(total) >= float(0.5):

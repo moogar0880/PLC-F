@@ -20,9 +20,9 @@ fun permutation [] = Cons(SOME [], fn() => nullSeq [])
         (* Search by list index, not entries index *)
         fun findByLI ([],_,_) = []
           | findByLI ((x::rol),v,i) = if i = v then (x::rol) else findByLI(rol,v,i+1)
-        (* Find largest value that is less than the value next to it  *)
-        fun getPos ([],i)                      = i (*Should never happen*)
-          | getPos (((x1,v1)::[]),_)           = x1 (* Should only happen when permutation is called on a list of length 1 *)
+        (* Find largest value that is less than the value next to it *)
+        fun getPos ([],i)                      = i  (*Should never happen*)
+          | getPos (((x1,v1)::[]),_)           = x1 (*Should only happen when permutation is called on a list of length 1*)
           | getPos (((x1,v1)::(x2,v2)::[]),i)  = if x1 < x2 andalso x1 > i then x1 else i
           | getPos (((x1,v1)::(x2,v2)::rol),i) = if x1 < x2 andalso x1 > i then getPos((x2,v2)::rol, x1) else getPos((x2,v2)::rol,i)
         (* Simple sorting method for lists/tuples *)
