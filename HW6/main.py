@@ -57,21 +57,8 @@ class Trie:
         self.root = self.Node(None,None) #generate root Node (empty, no parent)
         self.commonPrefixes = []
 
-#    @property
-#    def commonPrefixes(self):
-#        if len(self.commonPrefixes) > 0:
-#            currentCounts = [0,0,0,0,0,0,0,0,0,0]
-#            node = root
-#            for i in currentCounts:
-#                (resume,d,c) = node.fetch(node)
-#                if c > currentCounts[i]:
-#                    commonPrefixes[i] = d
-#                    currentCounts[i] = c
-#                    node = resume
-#        return self.commonPrefixes
-
     def __contains__(self,data):
-        return self.root.find(data,1) != None:
+        return self.root.find(data,1) != None
 
     def add(self, data):
         self.root.add(data,self.root)
