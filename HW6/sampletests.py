@@ -5,31 +5,31 @@ import main
 
 class TestEncode(unittest.TestCase):
 
-    def testOne(self): 
+    def testOne(self):
         msg = sidewalk
         coded = main.encode(msg, 1)
         test = "uifsf jt b qmbdf xifsf uif tjefxbml foet"
         self.assertEqual(coded[:len(test)], test)
 
-    def testDefault(self): 
+    def testDefault(self):
         msg = sidewalk
         coded = main.encode(msg)
         test = "gurer vf n cynpr jurer gur fvqrjnyx raqf"
         self.assertEqual(coded[:len(test)], test)
 
-    def testNonalpha(self): 
+    def testNonalpha(self):
         msg = sidewalk
         coded = main.encode(msg)
         self.assertEqual(coded[69], ",")
         self.assertEqual(coded[-1], ".")
 
-    def testReverse(self): 
+    def testReverse(self):
         msg = sidewalk
         coded = main.encode(sidewalk, 2)
         self.assertEqual(sidewalk, main.encode(coded, -2))
 
     @timeout(1)
-    def testLarge(self): 
+    def testLarge(self):
         msg = hamlet
         coded = main.encode(msg, 2)
         self.assertTrue(True)
@@ -37,13 +37,13 @@ class TestEncode(unittest.TestCase):
 class TestTryShifts(unittest.TestCase):
 
     @timeout(1)
-    def testSingleShift(self): 
+    def testSingleShift(self):
         msg = sidewalk
         results = main.tryShifts(msg)
         self.assertEqual(len(results.next()), len(msg))
 
     @timeout(3)
-    def testNumShifts(self): 
+    def testNumShifts(self):
         msg = sidewalk
         results = main.tryShifts(msg)
         i=0
@@ -52,14 +52,14 @@ class TestTryShifts(unittest.TestCase):
         self.assertTrue(i == 26)
 
     @timeout(3)
-    def testAllShifts(self): 
+    def testAllShifts(self):
         msg = sidewalk
         results = main.tryShifts(msg)
         for result in results:
             self.assertEqual(len(result), len(msg))
 
     @timeout(5)
-    def testLarge(self): 
+    def testLarge(self):
         msg = hamlet
         results = main.tryShifts(msg)
         for result in results:
@@ -68,20 +68,20 @@ class TestTryShifts(unittest.TestCase):
 class TestTrie(unittest.TestCase):
 
     @timeout(1)
-    def testAddSingle(self): 
+    def testAddSingle(self):
         t = main.Trie()
         t.add("test")
         self.assertTrue("test" in t)
 
     @timeout(10)
-    def testAddDictionary(self): 
+    def testAddDictionary(self):
         t = main.Trie()
         infile = open(dictfile)
         [t.add(w.strip()) for w in infile]
         [self.assertTrue(w.strip() in t) for w in infile]
 
     @timeout(1)
-    def testUpdate(self): 
+    def testUpdate(self):
         t = main.Trie()
         t.add("cat")
         t.add("cats")
@@ -102,35 +102,35 @@ class TestTrie(unittest.TestCase):
 class TestDecode(unittest.TestCase):
 
     @timeout(3)
-    def testShortSingleShift(self): 
+    def testShortSingleShift(self):
         msg = sidewalk_encoded
         res = sidewalk
         r, t = main.decode(msg, dictfile)
         self.assertEqual(r, res)
 
     @timeout(5)
-    def testShortMultiShift(self): 
+    def testShortMultiShift(self):
         msg = cat_encoded
         res = cat
         r, t = main.decode(msg, dictfile)
         self.assertEqual(r, res)
 
     @timeout(10)
-    def testLongSingleShift(self): 
+    def testLongSingleShift(self):
         msg = hamlet_encoded
         res = hamlet
         r, t = main.decode(msg, dictfile)
         self.assertEqual(r, res)
 
     @timeout(15)
-    def testLongMultiShift(self): 
+    def testLongMultiShift(self):
         msg = v_entries_encoded
         res = v_entries
         r, t = main.decode(msg, dictfile)
         self.assertEqual(r, res)
 
     @timeout(3)
-    def testCounts(self): 
+    def testCounts(self):
         msg = sidewalk
         r, t = main.decode(msg, dictfile)
         l = [("there",4),("sidewalk",1),("and",5),("wind",1),("the",6)]
