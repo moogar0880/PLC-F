@@ -162,7 +162,7 @@ public class EvalClient implements Runnable{
                 }
             }
         }
-        return target;
+        return "";
     }
 
     /**
