@@ -1,5 +1,4 @@
 package cs671.eval;
-
 import java.io.Serializable;
 
 /**
@@ -12,8 +11,8 @@ import java.io.Serializable;
  */
 public class EvalTask implements Serializable {
     public Object[][] args; //Arguments to be passed to methods.
-	public String[] methods; //Names of methods to be called.
-	public Object target; //Object to be the target of the methods called.
+	public String[] methods;//Names of methods to be called.
+	public Object target;   //Object to be the target of the methods called.
 
 	public EvalTask(Object t, String[] m, Object[][] a){
 		target  = t;
@@ -25,7 +24,7 @@ public class EvalTask implements Serializable {
      * Returns the array of method names
      * @return - array of method names
      */
-    private String[] getMethods(){
+    public String[] getMethods(){
         return methods;
     }
 
@@ -33,7 +32,7 @@ public class EvalTask implements Serializable {
      * Returns the 2D array of args for methods
      * @return - 2D array of args for methods
      */
-    private Object[][] getArgs(){
+    public Object[][] getArgs(){
         return args;
     }
 
@@ -41,8 +40,21 @@ public class EvalTask implements Serializable {
      * Returns the target <code>Object</code>
      * @return - target <code>Object</code>
      */
-    private Object getTarget(){
+    public Object getTarget(){
         return target;
+    }
+
+    public String toString(){
+        String out = "====TASK====\nMethods:\n";
+        for(String m : methods)
+            out += "\t" + m + "\n";
+        out += "Arguments:\n";
+        for(int i = 0; i < args.length; i++){
+            for( int j = 0; j < args[i].length; j++){
+                out += "\t" + args[i][j] + "\n";
+            }
+        }
+        return out;
     }
 
 }
