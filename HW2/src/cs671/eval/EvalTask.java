@@ -10,9 +10,9 @@ import java.io.Serializable;
  * the object to be used, names of parameters, and arguments to pass.
  */
 public class EvalTask implements Serializable {
-    public Object[][] args; //Arguments to be passed to methods.
-	public String[] methods;//Names of methods to be called.
-	public Object target;   //Object to be the target of the methods called.
+    public Object[][] args;   //Arguments to be passed to methods.
+	public String[]   methods;//Names of methods to be called.
+	public Object     target; //Object to be the target of the methods called.
 
 	public EvalTask(Object t, String[] m, Object[][] a){
 		target  = t;

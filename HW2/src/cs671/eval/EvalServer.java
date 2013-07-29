@@ -1,13 +1,15 @@
 package cs671.eval;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -226,21 +228,201 @@ public class EvalServer implements Runnable{
         }
     }
 
+    private static Class<?>[] buildHeaders(String[] headers){
+        Class<?>[] toRet = new Class<?>[3];
+        Class dataStructure = null, keyType = null, dataType = null;
+        for(String s : headers){
+            try{
+                if( dataStructure == null )
+                    dataStructure = Class.forName("cs671.eval." + s);
+                else if(keyType == null)
+                    keyType = Class.forName("cs671.eval." + s);
+                else if(dataType == null)
+                    dataType = Class.forName("cs671.eval." + s);
+            } catch(ClassNotFoundException e) {
+                try{
+                    if( dataStructure == null )
+                        dataStructure = Class.forName("java.lang." + s);
+                    else if(keyType == null)
+                        keyType = Class.forName("java.lang." + s);
+                    else if(dataType == null)
+                        dataType = Class.forName("java.lang." + s);
+                }
+                catch (ClassNotFoundException ex){
+                    System.err.println(e);
+                }
+            }
+        }
+        toRet[0] = dataStructure;
+        toRet[1] = keyType;
+        toRet[2] = dataType;
+        return toRet;
+    }
+
+    private static Method getAddMethod(Class ds){
+        try {
+            return ds.getMethod("add", Comparable.class, Object.class);
+        } catch (NoSuchMethodException e) {
+            System.err.println(e);
+        }
+        return null;
+    }
+
+    private static Object getNewInstance(Class c){
+        try {
+            return c.newInstance();
+        } catch (InstantiationException e) {
+            System.err.println(e);
+        } catch (IllegalAccessException e) {
+            System.err.println(e);
+        }
+        return null;
+    }
+
+    private static Constructor<?>[] getTypeCons(Class key, Class data){
+        Constructor<?>[] toRet = new Constructor<?>[2];
+        Class[] argTypes = {String.class};
+        try {
+            toRet[0] = key.getDeclaredConstructor(argTypes);
+            toRet[1] = data.getDeclaredConstructor(argTypes);
+        } catch (NoSuchMethodException e) {
+            System.err.println(e);
+        }
+        return toRet;
+    }
+
+    private static ArrayList<Object> getDSData(String[] raw, Constructor<?> key, Constructor<?> data){
+        ArrayList<Object> toRet = new ArrayList<Object>();
+        int i = 0;
+        while( i + 1 < raw.length ){
+            try {
+                toRet.add(key.newInstance(raw[i++]));
+                toRet.add(data.newInstance(raw[i++]));
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return toRet;
+    }
+
+    private static Object[][] parseMakeParams(ArrayList<Object[]> params){
+        Object[][] toRet = new Object[params.size()][];
+        for(int i = 0; i < toRet.length; i++){
+            Object[] scan = params.get(i);
+            toRet[i] = new Object[scan.length];
+            for(int j = 0; j < scan.length; j++){
+                String[] parsed = ((String)scan[j]).split("&");
+                int k = 0;
+                while(k < parsed.length){
+                    String type = parsed[k++];
+                    String val  = parsed[k++];
+                    toRet[i][j] = null;
+                    //Class<?> c = Class.forName(type).getDeclaredConstructor(Class.forName(val)).
+                }
+                toRet[i][j] = scan[j];
+            }
+        }
+        return toRet;
+    }
+
+    private static EvalTask buildTask(List<String> lines){
+        Class<?>[] headers = buildHeaders(lines.remove(0).split(" "));
+        Class dataStructure = headers[0], keyType = headers[1], dataType = headers[2];
+        //Instantiate DS, keyType and dataType Constructors
+        Object target    = getNewInstance(dataStructure);
+        Method targetAdd = getAddMethod(dataStructure);
+
+        Constructor<?>[] tyCons = getTypeCons(keyType,dataType);
+        Constructor<?> keyConst = tyCons[0], dataConst = tyCons[1];
+
+        //Build DS from data lines
+        ArrayList<Object> data = getDSData(lines.remove(0).split("&"), keyConst, dataConst );
+        int i = 0;
+        while(i + 1 < data.size()){
+            try {
+                targetAdd.invoke(target,keyType.cast(data.get(i++)),dataType.cast(data.get(i++)));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Build EvalTasks
+        String cur = lines.remove(0);
+        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<Object[]> params = new ArrayList<Object[]>();
+        while(true){
+            String[] fields = cur.split(" ");
+            names.add(fields[0]);
+            if(fields.length > 1){
+                Object[] p = new Object[fields.length - 1];
+                i = 1;
+                while(i < fields.length)
+                    p[i-1] = fields[i++];
+                params.add(p);
+            }
+            else
+                params.add(new Object[0]);
+            if(lines.isEmpty())
+                break;
+            cur = lines.remove(0);
+        }
+        String[]   finalNames = new String[names.size()];
+        for(i = 0; i < names.size(); i++)
+            finalNames[i] = names.get(i);
+
+        Object[][] finalParams = parseMakeParams(params);
+
+        String out = "=============\n";
+        for(i = 0; i < finalParams.length; i++){
+            out += i +": " + finalNames[i] + ": ";
+            for(int j = 0; j < finalParams[i].length; j++){
+                out += finalParams[i][j] +",";
+            }
+            out += "\n";
+        }
+        System.out.println(out);
+        return new EvalTask(target,finalNames,finalParams);
+    }
+
     /**
      * Main method for running the server from command line. Creates a new server using the port and input
      * file given at command line. Reads the data structures and methods from the input file and adds them to
      * the <code>work</code> list. Starts the server in a new <code>Thread</code>.
-     * @param args
+     * @param args - Command line arguments in the form java cs671.eval.EvalServer [port number] [work file]
      */
     public static void main(java.lang.String[] args){
         String usage = "java cs671.eval.EvalServer [port number] [work file]";
-        if( args.length != 3 ){
+        if( args.length != 2 ){
             System.out.println(usage);
             System.exit(1);
         }
-        int port = Integer.parseInt(args[1]);
-        File workFile = new File(args[2]);
+        int port = Integer.parseInt(args[0]);
         EvalServer server = new EvalServer(port);
-        //TODO Figure out how to add work from work file
+        server.initialize();
+        Thread t = new Thread(server);
+        t.start();
+        String file = "";
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(args[1]));
+            String line;
+            while ((line = in.readLine()) != null)
+                file += line + "\n";
+            in.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Get list of EvalTask data
+        String[] tasks = file.split("\n\n");
+        for(String s : tasks){
+            server.addWork(buildTask(new ArrayList(Arrays.asList(s.split("\n")))));
+        }
     }
 }

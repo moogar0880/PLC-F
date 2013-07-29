@@ -144,9 +144,7 @@ public class EvalClient implements Runnable{
         Method[] methods = c.getDeclaredMethods();
         for( Method m : methods){
             if( m.getName().equals(name)){
-                //System.out.println("\t"+name +","+m.getName());
                 if( checkMethod(name, m, args) ){
-                    //System.out.println("checkMethod("+name+","+m.getName()+" returned true");
                     try{
                         if(m.getReturnType().equals(Void.TYPE)){
                             m.invoke(target,args);
