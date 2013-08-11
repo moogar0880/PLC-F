@@ -9,7 +9,7 @@ Java #1, This program solves multiple kinds of state-based problems using breadt
 
 HW2
 -----
-Java #2, This program had several parts. We needed to implement 3 data structures (linked list, binary search tree, and a priority queue implemented as a heap) that were all efficiently serializable. We then needed to create a multithreaded server capable of managing any number of "EvalClients" in their own threads which were each responsible for running any number of "EvalTasks" to whether a method passed in could be called on the object given to an EvalClient. This check was done using Java reflection and if it was determined that the method given could be called with the given parameters, the method was called on the object and the result of the method call (or the object itself if the methods return type was void) was added to the servers list of results.
+Java #2, This program had several parts. We needed to implement 3 data structures (linked list, binary search tree, and a priority queue implemented as a heap) that were all efficiently serializable. We then needed to create a multithreaded server capable of managing any number of "EvalClients" in their own threads which were each responsible for running any number of "EvalTasks" to determine whether a method passed in could be called on an object passed to an EvalClient. This check was done using Java reflection and if it was determined that the method given could be called with the given parameters, the method was called on the object and the result of the method call (or the object itself if the methods return type was void) was added to the servers list of results.
 
 HW3
 -----
